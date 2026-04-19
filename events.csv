@@ -1,12 +1,15 @@
 date,title,city,mode,price,url,description_short,keywords_match,score,source
-18 Jun 2025,Nordic Fintech Summit — Open Banking & Payments,Copenhagen,In-person,1200 DKK,https://lu.ma/example-fintech,"Europe's leading fintech event returns to Copenhagen with a focus on open banking, embedded finance and the future of payments. Speakers from Danske Bank, Nordea, Nykredit and leading European neobanks.","fintech, banking, payments, open banking, digital banking",91,luma_copenhagen
-20 Jun 2025,Retail Tech Denmark — AI in Customer Experience,Aarhus,In-person,650 DKK,https://lu.ma/example-retail,"How Danish retailers are rethinking customer experience with AI agents, personalization engines and mobile-first commerce. Real case studies from Matas, Bilka and Magasin.","retail, AI, customer experience, e-commerce, mobile app",85,luma_aarhus
-25 Jun 2025,Copenhagen Mobile Meetup #34,Copenhagen,In-person,Free,https://lu.ma/example-mobile,"Monthly meetup for iOS and Android developers. Talks on Kotlin Multiplatform, SwiftUI animations, and scaling mobile teams beyond 20 engineers. Free pizza & beer.","mobile app, iOS, Android, multiplatform, kotlin multiplatform",77,luma_copenhagen
-22 Jun 2025,E-commerce Denmark — Conversion & UX,Online,Online,Free,https://lu.ma/example-ecom,"Free online conference on conversion optimization, product design for checkout flows, and the state of Danish e-commerce in 2025. Includes panel with Trustpilot and Zalando.","e-commerce, UX, product design, customer experience",68,luma_copenhagen
-27 Jun 2025,AI Agents in Production — Copenhagen AI Society,Copenhagen,In-person,Free,https://lu.ma/example-aiagents,"Practical deep-dive into deploying AI agents in production environments. Talks from Saxo Bank and Vivino on their production AI assistant rollouts and lessons learned.","AI, AI agents, AI assistants, banking",72,luma_copenhagen
-30 Jun 2025,Design Systems Copenhagen,Copenhagen,In-person,450 DKK,https://lu.ma/example-designsys,"A half-day summit for design system leads. Sessions on tokenization, design-to-code pipelines, and governance models at scale.","design system, UI, UX, product design",55,luma_copenhagen
-02 Jul 2025,App Store Optimization Workshop,Online,Online,Free,https://lu.ma/example-aso,"Interactive online workshop covering ASO fundamentals, keyword research for Nordic markets, and A/B testing store listings for iOS and Android.","app store optimization, ASO, iOS, Android, mobile app",62,luma_copenhagen
-05 Jul 2025,Copenhagen Blockchain Collective,Copenhagen,In-person,Free,https://lu.ma/example-blockchain,"Monthly community event on web3, DeFi protocols, and NFT marketplaces. Focused on developer tooling and smart contract security.","",10,luma_copenhagen
-08 Jul 2025,Aarhus Dev Night — Backend Performance,Aarhus,In-person,Free,https://lu.ma/example-backend,"Talks on scaling Postgres, optimizing Go services, and building event-driven architectures. Aimed at senior backend engineers.","",5,luma_aarhus
-12 Jul 2025,Insurance Innovation Forum,Copenhagen,In-person,2400 DKK,https://lu.ma/example-insurance,"Forum for insurance executives and innovation leads. Sessions on AI claims processing, digital-first insurance products, and mobile self-care apps. Participants from Tryg, Topdanmark, Codan.","insurance, BFSI, AI, mobile app, customer experience",87,luma_copenhagen
-15 Jul 2025,UX Copenhagen Lunch Talk — Research in B2B,Copenhagen,In-person,Free,https://lu.ma/example-ux,"Short lunch session on user research methodologies for B2B SaaS products. How to recruit, interview and synthesize findings when your users have day jobs.","UX, product design",30,luma_copenhagen
+20 Apr 2026,Copenhagen Tailscale Meetup @ Vivino,København,In-person,Free,https://lu.ma/i4rmayej,,AI,25,luma_copenhagen
+22 Apr 2026,Kaffesymbiosen & cirkularitet | Inspirationsmøde for FM & Indkøb,København,In-person,Free,https://lu.ma/at7vrjsi,,iOS,25,luma_copenhagen
+25 Apr 2026,SB Training weekend workout,København,In-person,Free,https://lu.ma/zidsxuqc,,AI,25,luma_copenhagen
+28 Apr 2026,"MaritimeTech, Unfiltered: Built in Denmark, Scaling Everywhere",København,In-person,Free,https://lu.ma/0pki96tg,,UI,25,luma_copenhagen
+23 Apr 2026,VERMLAND SHOWROOM OPENING,København,In-person,Free,https://lu.ma/on5ak75g,,,15,luma_copenhagen
+25 Apr 2026,Kala Social Run,København,In-person,Free,https://lu.ma/hr5du2z1,,,15,luma_copenhagen
+27 Apr 2026,ClawCon Copenhagen,København,In-person,Free,https://lu.ma/clawconcopenhagen,,,15,luma_copenhagen
+29 Apr 2026,Vibe Coding København #4,København,In-person,Free,https://lu.ma/gvy6i6pg,,,15,luma_copenhagen
+29 Apr 2026,Hybrid Social Ride (Pace 26-28),København,In-person,Free,https://lu.ma/28koqh0d,,,15,luma_copenhagen
+30 Apr 2026,AI x Design Copenhagen - 4th Edition,Frederiksberg,In-person,Free,https://lu.ma/ph7xqr4m,,AI,15,luma_copenhagen
+01 May 2026,Dimmer.1,København,In-person,Free,https://lu.ma/7es5hylq,,,15,luma_copenhagen
+05 May 2026,Curious Neighbours: Nordvest Meetup,København,In-person,Free,https://lu.ma/q5tq5497,,,15,luma_copenhagen
+09 May 2026,Hybrid Social x NRTHRN Strong x Matas (Goodiebags Included worth 700 DKK),København,In-person,Free,https://lu.ma/spvci4li,,,15,luma_copenhagen
+21 Apr 2026,Vibe Coding Netværk's KBH Meetup #3,Frederiksberg,In-person,Free,https://lu.ma/4bah9tsl,,,5,luma_copenhagen
