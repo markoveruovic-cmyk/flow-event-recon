@@ -2,86 +2,150 @@
 
 Interní nástroj Etnetera Flow pro automatizovaný přehled tech/business eventů v Dánsku.
 
-Sleduje eventy ze 4 zdrojů (Copenhagen Fintech, Luma, Eventbrite), skóruje podle
-relevance pro ICPs (Retail, BFSI, E-commerce), kategorizuje podle topicu a formátu,
-a nabízí sales-focused dashboard s shortlisty, poznámkami a calendar exportem.
+Malý Python nástroj, co každé pondělí (nebo kdy ho spustíš) stáhne nadcházející
+tech/business eventy v Dánsku, skóruje je podle tvých klíčových slov a vyhodí ti:
 
-**Live URL:** https://markoveruovic-cmyk.github.io/flow-event-recon/
+1. `events.csv` — tabulka, co otevřeš v Excelu / Google Sheets
+2. `index.html` — přehledová webová stránka v brandu Flow, kterou si otevřeš v prohlížeči
 
----
-
-## Co to umí (v0.3)
-
-### Dashboard features
-- 📊 Stats strip — Don't miss / Worth considering / New / Free / Showing
-- 🏷️ 5 filtrů — Topic, Format, City, Organizer, When (date range)
-- 🟡 NEW badge — u eventů, které minulý týden ještě nebyly
-- ⭐ ★ Save — osobní shortlist (localStorage)
-- 📝 Sales notes — per-event poznámky (localStorage)
-- 📅 Add to Calendar — stáhne .ics soubor
-- 🗂️ 3 záložky — All events / My shortlist / Past events
-- 🖨️ Print / Save as PDF — čistý printable výpis
-- ⚙️ Export/Import — backup & sharing shortlistu s kolegou
-
-### Pod kapotou
-- Scraping: Copenhagen Fintech, Luma (CPH + Aarhus), Eventbrite (Business + Tech)
-- History tracking: seen_urls.txt pamatuje dřívější eventy pro detekci nových
-- Past events archive: past_events.csv, 90denní retence
-- Každé pondělí 8:00 automatický run přes GitHub Actions
+**Žádné AI API, žádný cloud, žádné účty** — jen Python a čtyři soubory kódu.
 
 ---
 
-## Struktura projektu
+## Co je v projektu
 
 ```
 flow-event-recon/
-├── .github/workflows/weekly.yml   ← GitHub Actions scheduler
-├── config.py                       ← keywords, kategorie, zdroje (HLAVNÍ edit point)
-├── scoring.py                      ← výpočet skóre (0-100)
-├── scraper.py                      ← multi-source scraping
-├── history.py                      ← NEW tracking + past events archive
-├── generate_html.py                ← dashboard generator
-├── requirements.txt                ← Python dependencies
-├── events.csv                      ← [auto] upcoming events
-├── past_events.csv                 ← [auto] archive (90 dní)
-├── seen_urls.txt                   ← [auto] history store
-└── index.html                      ← [auto] finální dashboard
+├── config.py          ← KLÍČOVÁ SLOVA a nastavení (TADY budeš upravovat)
+├── scraper.py         ← stahuje z Lumy
+├── scoring.py         ← počítá skóre 0–100
+├── generate_html.py   ← vygeneruje webovou stránku
+├── events.csv         ← výstup (při prvním spuštění přepíšeš ukázková data)
+├── index.html         ← výstup (otevři v prohlížeči)
+├── requirements.txt   ← seznam knihoven (pro tech tým / pip install)
+└── README.md          ← tenhle soubor
 ```
 
-[auto] = generuje se a commituje automaticky při každém běhu workflow.
-
 ---
 
-## Editace bez kódu
+## Rychlý start (poprvé)
 
-**Přidat / upravit klíčová slova:**
-Otevři config.py na GitHubu (klikni tužku) a uprav seznamy ICP_KEYWORDS, TECH_KEYWORDS.
-Commit changes → workflow se spustí → za 2 min je změna live.
+### 1. Zkontroluj, že máš Python 3.10+
 
-**Změnit váhy skórování:**
-config.py, sekce SCORE_* konstanty + TOPIC_SCORE_BONUS + FORMAT_SCORE_BONUS.
-
-**Vypnout zdroj:**
-config.py → SOURCES → nastav "enabled": False u daného zdroje.
-
----
-
-## Lokální spuštění (volitelné)
+Otevři terminál a spusť:
 
 ```bash
-pip install -r requirements.txt
-python scraper.py       # stáhne, napočítá, vytvoří CSV + HTML
-open index.html         # otevři v prohlížeči
+python3 --version
 ```
 
-Python 3.10+ required.
+Pokud to ukáže `3.10` a vyšší, jsi OK. Pokud ne, nainstaluj si
+[Python z python.org](https://www.python.org/downloads/).
+
+### 2. Nainstaluj knihovny
+
+V terminálu, v této složce:
+
+```bash
+pip3 install -r requirements.txt
+```
+
+Stáhne tři drobné knihovny (requests, beautifulsoup4, python-dateutil).
+
+### 3. Otevři preview BEZ stahování nových eventů
+
+Kdyžužsi chceš nejdřív jen prohlédnout, jak to vypadá — otevři `index.html`
+v prohlížeči (nebo spusť):
+
+```bash
+python3 generate_html.py
+```
+
+Uvidíš dashboard s ukázkovými eventy ze Sample CSV.
+
+### 4. Stáhni reálné eventy z Lumy
+
+```bash
+python3 scraper.py
+```
+
+Skript:
+- stáhne eventy z `lu.ma/copenhagen` a `lu.ma/aarhus`
+- přepočítá skóre
+- přepíše `events.csv` a `index.html`
+
+Pak znovu otevři `index.html` — vidíš aktuální data.
 
 ---
 
-## Roadmapa
+## Úpravy, co zvládneš sama
 
-- [ ] AI vrstva přes Claude API (lepší shrnutí + inteligentnější kategorizace)
-- [ ] Use Case 2 — Key accounts tracking
-- [ ] Slack webhook notifikace
-- [ ] Email digest
-- [ ] Další zdroje (TechBBQ partneři, DI events, Meetup.com)
+### Přidat / ubrat klíčová slova
+
+Otevři `config.py` v libovolném editoru (VS Code, Notepad, cokoliv).
+Seznamy `ICP_KEYWORDS` a `TECH_KEYWORDS` uprav podle potřeby.
+
+### Změnit barvy nebo vzhled
+
+`generate_html.py` — hned nahoře v `HTML_TEMPLATE` jsou CSS proměnné:
+
+```css
+--bg: #0B0B0B;
+--accent: #D7FF3A;
+--text: #F5F5F0;
+```
+
+Uprav hexy podle aktuálního brand guidu Flow a přegeneruj:
+
+```bash
+python3 generate_html.py
+```
+
+### Přidat další dánské město
+
+V `config.py` přidej do `SOURCES`:
+
+```python
+"luma_odense": {
+    "enabled": True,
+    "url": "https://lu.ma/odense",
+    "city_default": "Odense",
+},
+```
+
+---
+
+## Co přidáme příště (roadmapa)
+
+- [ ] **Další zdroje:** Eventbrite, Meetup, TechBBQ, Copenhagen Fintech Week
+- [ ] **Claude API:** lepší AI shrnutí (2–3 věty namísto zkrácení popisu) a
+      chytřejší skórování, co rozumí kontextu
+- [ ] **Automatický běh:** GitHub Actions cron každé pondělí v 7:00
+- [ ] **Use case 2:** Sledování key accounts (Danske Bank, Nordea, …)
+- [ ] **Export do Notionu / Slacku** (volitelné)
+
+---
+
+## Když něco nefunguje
+
+**"No events collected"**  
+Luma mohla změnit strukturu stránky. Pošli tech týmu výstup z terminálu
+a soubor `scraper.py`.
+
+**"ModuleNotFoundError"**  
+Zapomněla jsi krok 2 — `pip3 install -r requirements.txt`.
+
+**Stránka vypadá rozbitě**  
+Pravděpodobně nejede internet při prvním načtení (kvůli Google Fonts).
+Bez fontů bude fungovat, jen to nebude tak hezké.
+
+---
+
+## Pro tech tým
+
+- Pure Python 3.10+, žádné exotické dependencies
+- Jeden adaptér = jedna funkce `scrape_*(key, cfg)` v `scraper.py`, vrací `list[Event]`
+- Přidání zdroje: nový záznam v `SOURCES` + funkce s odpovídajícím prefixem
+- Scoring je rules-based (viz `scoring.py`), připravený na pozdější AI vrstvu
+- HTML je jeden soubor bez buildu, žádný Node / bundler
+- Pro deployment doporučuju GitHub Actions cron + commit výstupu do repa,
+  případně GitHub Pages na hosting `index.html`

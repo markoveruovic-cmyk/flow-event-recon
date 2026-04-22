@@ -1,64 +1,4 @@
-"""
-Flow Event Recon v0.4 — generator for sales dashboard.
-Features (15 from Jistota list):
-1. NEW badge
-2. Add to Calendar (.ics)
-3. Past events archive
-4. ★ Save events
-5. Sales notes
-6. Print view
-7. Date range filter
-8. Organizer / Topic / Format / City filters (from v0.3)
-9. Speaker + Key company chips + "Has speaker from" filter
-10. Conflict detector (when 2 saved events share date)
-11. Nearby events chaining
-12. Weekly summary oneliner
-13. Event of the week hero card
-14. Smart date parsing (tomorrow / next week)
-15. Keyword highlighting in description
-16. Similar to what I saved
-17. Email template
-18. UTM share link
-19. iCal subscription URL (all saves as ICS)
-20. Countdown to next top event
-21. Weekly diff (what changed)
-22. Export selected
-23. Manual event seed (localStorage)
-24. Dark mode toggle
-"""
-
-from __future__ import annotations
-
-import csv
-import html
-import json
-from datetime import datetime
-from pathlib import Path
-
-from config import (
-    CSV_OUTPUT, HTML_OUTPUT, SCORE_TIER_HIGH, SCORE_TIER_MEDIUM,
-    KEY_COMPANIES, ICP_KEYWORDS, TECH_KEYWORDS,
-)
-
-PAST_EVENTS_CSV = "past_events.csv"
-
-
-def _load_csv(path: str) -> list[dict]:
-    p = Path(path)
-    if not p.exists():
-        return []
-    with open(p, "r", encoding="utf-8") as f:
-        return list(csv.DictReader(f))
-
-
-def _options(values: list[str]) -> str:
-    return "\n".join(
-        f'          <option value="{html.escape(v)}">{html.escape(v)}</option>'
-        for v in values
-    )
-
-
-HTML_TEMPLATE = r"""<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
@@ -551,8 +491,8 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
         </div>
       </div>
       <div class="topbar-right">
-        <span class="tag">Updated <strong>__UPDATED__</strong></span>
-        <span class="tag"><strong>__TOTAL__</strong> events</span>
+        <span class="tag">Updated <strong>22 Apr 2026</strong></span>
+        <span class="tag"><strong>13</strong> events</span>
         <span id="new-count-tag" class="tag" style="display:none; background: var(--amber-soft); color: var(--amber-text);">
           <strong id="new-count-num">0</strong> new
         </span>
@@ -584,11 +524,46 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
         <input type="search" id="search-box" placeholder="Search title, description, organizer…" />
       </div>
       <div class="filter-group">
-        <div class="select-wrap"><select id="filter-topic"><option value="all">All topics</option>__TOPIC_OPTIONS__</select></div>
-        <div class="select-wrap"><select id="filter-format"><option value="all">All formats</option>__FORMAT_OPTIONS__</select></div>
-        <div class="select-wrap"><select id="filter-city"><option value="all">All cities</option>__CITY_OPTIONS__</select></div>
-        <div class="select-wrap"><select id="filter-organizer"><option value="all">All organizers</option>__ORGANIZER_OPTIONS__</select></div>
-        <div class="select-wrap"><select id="filter-company"><option value="all">Any key company</option>__COMPANY_OPTIONS__</select></div>
+        <div class="select-wrap"><select id="filter-topic"><option value="all">All topics</option>          <option value="Crypto &amp; Web3">Crypto &amp; Web3</option>
+          <option value="Fintech &amp; Banking">Fintech &amp; Banking</option>
+          <option value="Insurance &amp; BFSI">Insurance &amp; BFSI</option>
+          <option value="Mobile &amp; Design">Mobile &amp; Design</option>
+          <option value="Retail &amp; E-commerce">Retail &amp; E-commerce</option></select></div>
+        <div class="select-wrap"><select id="filter-format"><option value="all">All formats</option>          <option value="Conference">Conference</option>
+          <option value="Demo Day">Demo Day</option>
+          <option value="Meetup">Meetup</option>
+          <option value="Summit">Summit</option>
+          <option value="Workshop">Workshop</option></select></div>
+        <div class="select-wrap"><select id="filter-city"><option value="all">All cities</option>          <option value="Aarhus">Aarhus</option>
+          <option value="Copenhagen">Copenhagen</option>
+          <option value="Online">Online</option></select></div>
+        <div class="select-wrap"><select id="filter-organizer"><option value="all">All organizers</option>          <option value="ASO Stack Nordic">ASO Stack Nordic</option>
+          <option value="Copenhagen Fintech">Copenhagen Fintech</option>
+          <option value="Copenhagen Mobile Community">Copenhagen Mobile Community</option>
+          <option value="Design Systems CPH Community">Design Systems CPH Community</option>
+          <option value="E-commerce Association Denmark">E-commerce Association Denmark</option>
+          <option value="Insurance Denmark">Insurance Denmark</option>
+          <option value="Nordic Banking Association">Nordic Banking Association</option>
+          <option value="Retail Tech Denmark">Retail Tech Denmark</option>
+          <option value="UX Copenhagen">UX Copenhagen</option></select></div>
+        <div class="select-wrap"><select id="filter-company"><option value="all">Any key company</option>          <option value="Alm. Brand">Alm. Brand</option>
+          <option value="Bilka">Bilka</option>
+          <option value="Codan">Codan</option>
+          <option value="Coop">Coop</option>
+          <option value="Danske Bank">Danske Bank</option>
+          <option value="Jyske Bank">Jyske Bank</option>
+          <option value="Lunar">Lunar</option>
+          <option value="Magasin">Magasin</option>
+          <option value="Matas">Matas</option>
+          <option value="Nordea">Nordea</option>
+          <option value="Nykredit">Nykredit</option>
+          <option value="Pleo">Pleo</option>
+          <option value="Rema 1000">Rema 1000</option>
+          <option value="Salling Group">Salling Group</option>
+          <option value="Saxo Bank">Saxo Bank</option>
+          <option value="Topdanmark">Topdanmark</option>
+          <option value="Tryg">Tryg</option>
+          <option value="Zalando">Zalando</option></select></div>
         <div class="select-wrap">
           <select id="filter-date">
             <option value="all">Any date</option>
@@ -718,13 +693,13 @@ HTML_TEMPLATE = r"""<!DOCTYPE html>
 // ═══════════════════════════════════════════════════════════════════
 // DATA — scraped events + past archive
 // ═══════════════════════════════════════════════════════════════════
-const SCRAPED_EVENTS = __EVENTS_JSON__;
-const PAST_EVENTS = __PAST_EVENTS_JSON__;
-const SCORE_HIGH = __SCORE_HIGH__;
-const SCORE_MEDIUM = __SCORE_MEDIUM__;
-const ICP_KEYWORDS = __ICP_KEYWORDS_JSON__;
-const TECH_KEYWORDS = __TECH_KEYWORDS_JSON__;
-const KEY_COMPANIES = __KEY_COMPANIES_JSON__;
+const SCRAPED_EVENTS = [{"date": "20 May 2026", "date_iso": "2026-05-20T14:00:00+00:00", "title": "Open Banking & Payments Roundtable", "city": "Copenhagen", "mode": "In-person", "price": "Free", "url": "https://www.copenhagenfintech.dk/events/open-banking-roundtable", "description_short": "Curated roundtable on open banking APIs, PSD3, and the next wave of payments infrastructure. Featuring speakers from Danske Bank, Nykredit, Jyske Bank.", "keywords_match": "banking, open banking, payments", "score": "100", "format": "Other", "topic": "Fintech & Banking", "organizer": "Copenhagen Fintech", "source": "copenhagen_fintech", "is_new": "False", "key_companies": "Danske Bank, Nykredit, Jyske Bank", "speakers": ""}, {"date": "03 Jun 2026", "date_iso": "2026-06-03T09:00:00+00:00", "title": "Retail Tech Denmark — AI in Customer Experience", "city": "Aarhus", "mode": "In-person", "price": "650 DKK", "url": "https://eventbrite.dk/e/retail-tech-2026", "description_short": "How Danish retailers are reshaping customer experience with AI. Keynotes from Matas, Bilka, Magasin and Rema 1000. Panel on e-commerce conversion and mobile app UX by Anna Lindberg from Coop.", "keywords_match": "AI, UX, customer experience, e-com, e-commerce, mobile app, retail", "score": "100", "format": "Other", "topic": "Retail & E-commerce", "organizer": "Retail Tech Denmark", "source": "eventbrite_cph", "is_new": "True", "key_companies": "Matas, Coop, Bilka, Magasin, Rema 1000", "speakers": "Anna Lindberg"}, {"date": "03 Sep 2026", "date_iso": "2026-09-03T09:00:00+00:00", "title": "E-commerce Denmark 2026 — Conversion & UX Summit", "city": "Copenhagen", "mode": "In-person", "price": "1900 DKK", "url": "https://eventbrite.dk/e/ecommerce-dk-2026", "description_short": "Denmark's largest e-commerce conference. 40+ speakers on conversion optimization, mobile commerce, UX research. Speakers from Zalando, Matas, Salling Group.", "keywords_match": "UX, e-com, e-commerce", "score": "100", "format": "Summit", "topic": "Retail & E-commerce", "organizer": "E-commerce Association Denmark", "source": "eventbrite_cph", "is_new": "False", "key_companies": "Matas, Salling Group, Zalando", "speakers": ""}, {"date": "21 Sep 2026", "date_iso": "2026-09-21T09:00:00+00:00", "title": "Nordic Fintech Week 2026", "city": "Copenhagen", "mode": "In-person", "price": "See event", "url": "https://www.copenhagenfintech.dk/events/nordic-fintech-week-2026", "description_short": "The largest fintech conference in the Nordics. Connect with founders, investors, banks, and corporates across open banking, payments, AI in finance. Confirmed speakers from Saxo Bank, Lunar, Pleo.", "keywords_match": "AI, banking, fintech, open banking, payments", "score": "100", "format": "Conference", "topic": "Fintech & Banking", "organizer": "Copenhagen Fintech", "source": "copenhagen_fintech", "is_new": "False", "key_companies": "Saxo Bank, Lunar, Pleo", "speakers": ""}, {"date": "28 May 2026", "date_iso": "2026-05-28T10:00:00+00:00", "title": "Nordic Banking Forum 2026", "city": "Copenhagen", "mode": "In-person", "price": "1200 DKK", "url": "https://eventbrite.dk/e/nordic-banking-2026", "description_short": "Executive forum for BFSI leaders. Speakers from Danske Bank, Nordea, SEB and Nykredit. Focus on digital banking transformation.", "keywords_match": "BFSI, banking, digital banking", "score": "95", "format": "Other", "topic": "Fintech & Banking", "organizer": "Nordic Banking Association", "source": "eventbrite_cph", "is_new": "False", "key_companies": "Danske Bank, Nordea, Nykredit", "speakers": ""}, {"date": "15 Jul 2026", "date_iso": "2026-07-15T08:00:00+00:00", "title": "Nordic Insurance Innovation Forum", "city": "Copenhagen", "mode": "In-person", "price": "2400 DKK", "url": "https://eventbrite.dk/e/nordic-insurance-2026", "description_short": "Forum for insurance executives and innovation leads. Sessions on AI claims processing, digital-first insurance products. Speakers from Tryg, Topdanmark, Codan and Alm. Brand.", "keywords_match": "AI, insurance", "score": "85", "format": "Other", "topic": "Insurance & BFSI", "organizer": "Insurance Denmark", "source": "eventbrite_cph", "is_new": "True", "key_companies": "Tryg, Topdanmark, Codan, Alm. Brand", "speakers": ""}, {"date": "18 Jun 2026", "date_iso": "2026-06-18T10:00:00+00:00", "title": "App Store Optimization Workshop", "city": "Online", "mode": "Online", "price": "Free", "url": "https://lu.ma/aso-workshop", "description_short": "Interactive online workshop covering ASO fundamentals, keyword research for Nordic markets, and A/B testing store listings for iOS and Android apps.", "keywords_match": "ASO, Android, app store optimization, iOS", "score": "60", "format": "Workshop", "topic": "Mobile & Design", "organizer": "ASO Stack Nordic", "source": "luma_copenhagen", "is_new": "False", "key_companies": "", "speakers": ""}, {"date": "28 May 2026", "date_iso": "2026-05-28T17:00:00+00:00", "title": "Copenhagen Mobile Meetup #38", "city": "Copenhagen", "mode": "In-person", "price": "Free", "url": "https://lu.ma/cph-mobile-38", "description_short": "Monthly meetup for iOS and Android developers. Talks on Kotlin Multiplatform, SwiftUI, and scaling mobile teams. Free pizza and beer.", "keywords_match": "Android, UI, iOS, kotlin multiplatform, multiplatform", "score": "55", "format": "Meetup", "topic": "Mobile & Design", "organizer": "Copenhagen Mobile Community", "source": "luma_copenhagen", "is_new": "False", "key_companies": "", "speakers": ""}, {"date": "10 Jun 2026", "date_iso": "2026-06-10T15:00:00+00:00", "title": "Design Systems Copenhagen", "city": "Copenhagen", "mode": "In-person", "price": "450 DKK", "url": "https://lu.ma/design-systems-cph", "description_short": "Half-day summit for design system leads. Sessions on tokenization, design-to-code pipelines, and governance models at scale.", "keywords_match": "design system", "score": "55", "format": "Summit", "topic": "Mobile & Design", "organizer": "Design Systems CPH Community", "source": "luma_copenhagen", "is_new": "False", "key_companies": "", "speakers": ""}, {"date": "12 Jun 2026", "date_iso": "2026-06-12T14:00:00+00:00", "title": "UX Research Copenhagen — B2B Edition", "city": "Copenhagen", "mode": "In-person", "price": "Free", "url": "https://lu.ma/ux-b2b", "description_short": "UX research methodologies for B2B SaaS. How to recruit, interview and synthesize findings when your users have day jobs.", "keywords_match": "UI, UX", "score": "50", "format": "Other", "topic": "Mobile & Design", "organizer": "UX Copenhagen", "source": "luma_copenhagen", "is_new": "False", "key_companies": "", "speakers": ""}, {"date": "12 May 2026", "date_iso": "2026-05-12T10:00:00+00:00", "title": "Scaleup Masterclass: German-Market-Entry Workshop", "city": "Copenhagen", "mode": "In-person", "price": "See event", "url": "https://www.copenhagenfintech.dk/events/scaleup-masterclass", "description_short": "Workshop for Nordic fintechs entering Germany: strategy, expert talks, group work.", "keywords_match": "fintech", "score": "45", "format": "Workshop", "topic": "Fintech & Banking", "organizer": "Copenhagen Fintech", "source": "copenhagen_fintech", "is_new": "False", "key_companies": "", "speakers": ""}, {"date": "06 May 2026", "date_iso": "2026-05-06T09:00:00+00:00", "title": "Quantum Computing in Finance — Quantum as a Component", "city": "Copenhagen", "mode": "In-person", "price": "See event", "url": "https://www.copenhagenfintech.dk/events/quantum", "description_short": "Join Anna Jensen from Danske Bank and speaker Peter Olsen from Nordea for a clear understanding of where quantum stands today and what it means for financial organisations.", "keywords_match": "", "score": "40", "format": "Other", "topic": "Fintech & Banking", "organizer": "Copenhagen Fintech", "source": "copenhagen_fintech", "is_new": "True", "key_companies": "Danske Bank, Nordea", "speakers": "Peter Olsen, Anna Jensen"}, {"date": "09 Jun 2026", "date_iso": "2026-06-09T15:00:00+00:00", "title": "Demo Day: Digital Assets", "city": "Copenhagen", "mode": "In-person", "price": "See event", "url": "https://www.copenhagenfintech.dk/events/digital-assets", "description_short": "Demo day focused on digital assets, crypto, and blockchain fintechs from the Nordic region.", "keywords_match": "AI, fintech", "score": "35", "format": "Demo Day", "topic": "Crypto & Web3", "organizer": "Copenhagen Fintech", "source": "copenhagen_fintech", "is_new": "True", "key_companies": "", "speakers": ""}];
+const PAST_EVENTS = [{"date": "10 Apr 2026", "date_iso": "2026-04-10T10:06:56.252529+00:00", "title": "Fintech AI Summit Copenhagen 2026", "city": "Copenhagen", "mode": "In-person", "price": "See event", "url": "https://past.example/12", "description_short": "Summit on AI in banking. Speakers from Danske Bank, Nordea and Saxo Bank.", "keywords_match": "AI, banking, fintech", "score": "100", "format": "Summit", "topic": "Fintech & Banking", "organizer": "Copenhagen Fintech", "source": "eventbrite_cph", "is_new": "False", "key_companies": "Danske Bank, Nordea, Saxo Bank", "speakers": ""}, {"date": "28 Mar 2026", "date_iso": "2026-03-28T10:06:56.252529+00:00", "title": "Mobile UX Day Copenhagen", "city": "Copenhagen", "mode": "In-person", "price": "See event", "url": "https://past.example/25", "description_short": "Full day of mobile UX design iOS Android with talks from LEGO, Carlsberg and Novo Nordisk mobile teams.", "keywords_match": "Android, UX, iOS", "score": "65", "format": "Other", "topic": "Mobile & Design", "organizer": "Copenhagen Mobile Community", "source": "eventbrite_cph", "is_new": "False", "key_companies": "Novo Nordisk, LEGO, Carlsberg", "speakers": ""}, {"date": "13 Mar 2026", "date_iso": "2026-03-13T10:06:56.252529+00:00", "title": "Nordic E-commerce Roundtable", "city": "Copenhagen", "mode": "In-person", "price": "See event", "url": "https://past.example/40", "description_short": "E-commerce retail conversion roundtable. Participants from Matas, Bilka, Salling Group.", "keywords_match": "AI, e-com, e-commerce, retail", "score": "100", "format": "Other", "topic": "Retail & E-commerce", "organizer": "E-commerce Association Denmark", "source": "eventbrite_cph", "is_new": "False", "key_companies": "Matas, Bilka, Salling Group", "speakers": ""}, {"date": "26 Feb 2026", "date_iso": "2026-02-26T10:06:56.252529+00:00", "title": "Insurance Digital Transformation Forum", "city": "Copenhagen", "mode": "In-person", "price": "See event", "url": "https://past.example/55", "description_short": "Insurance BFSI AI transformation. Keynotes from Tryg, Topdanmark, Codan.", "keywords_match": "AI, BFSI, insurance", "score": "90", "format": "Other", "topic": "Insurance & BFSI", "organizer": "Insurance Denmark", "source": "eventbrite_cph", "is_new": "False", "key_companies": "Tryg, Topdanmark, Codan", "speakers": ""}];
+const SCORE_HIGH = 80;
+const SCORE_MEDIUM = 50;
+const ICP_KEYWORDS = ["retail", "banking", "fintech", "e-commerce", "ecommerce", "e-com", "insurance", "BFSI", "digital banking", "payments", "open banking", "neobank", "wealth", "asset management", "capital markets", "forsikring", "pension", "handel"];
+const TECH_KEYWORDS = ["mobile app", "mobile development", "iOS", "Android", "UX", "UI", "product design", "design system", "AI", "AI agents", "AI assistants", "GenAI", "multiplatform", "kotlin multiplatform", "flutter", "react native", "app store optimization", "ASO", "customer experience", "CX"];
+const KEY_COMPANIES = ["Danske Bank", "Nordea", "Nykredit", "Jyske Bank", "Spar Nord", "Sydbank", "Arbejdernes Landsbank", "Saxo Bank", "Lunar", "Pleo", "Vivino", "Tryg", "Topdanmark", "Codan", "Alm. Brand", "If Forsikring", "PFA", "Velliv", "AP Pension", "Matas", "Coop", "Netto", "Bilka", "Salling Group", "Rossmann", "Magasin", "Zalando", "Dansk Supermarked", "Rema 1000", "F\u00f8tex", "Silvan", "Jem & Fix", "Ilva", "\u0160koda", "Skoda", "BMW", "Volkswagen", "Audi", "Toyota", "Volvo", "TDC", "Telia", "Telenor", "3 Denmark", "Stofa", "SAS", "Norwegian", "\u00d8rsted", "Orsted", "DONG Energy", "Norlys", "Just Eat", "Wolt", "Too Good To Go", "Donkey Republic", "Maersk", "Novo Nordisk", "Vestas", "LEGO", "Carlsberg", "Ecco", "Pandora", "Bang & Olufsen"];
 
 // ═══════════════════════════════════════════════════════════════════
 // STORAGE
@@ -1521,52 +1496,3 @@ render();
 </script>
 </body>
 </html>
-"""
-
-
-def build_dashboard() -> None:
-    events = _load_csv(CSV_OUTPUT)
-    events.sort(key=lambda e: (-int(e.get("score", 0) or 0), e.get("date_iso", "")))
-    past_events = _load_csv(PAST_EVENTS_CSV)
-    past_events.sort(key=lambda e: e.get("date_iso", ""), reverse=True)
-
-    cities = sorted({e.get("city", "").strip() for e in events if e.get("city", "").strip()})
-    topics = sorted({e.get("topic", "").strip() for e in events
-                     if e.get("topic", "").strip() and e.get("topic") != "Other"})
-    formats = sorted({e.get("format", "").strip() for e in events
-                      if e.get("format", "").strip() and e.get("format") != "Other"})
-    organizers = sorted({e.get("organizer", "").strip() for e in events
-                         if e.get("organizer", "").strip()})
-    # Companies: from key_companies column (comma separated)
-    companies: set[str] = set()
-    for e in events:
-        for c in (e.get("key_companies", "") or "").split(","):
-            c = c.strip()
-            if c:
-                companies.add(c)
-    companies_sorted = sorted(companies)
-
-    out = HTML_TEMPLATE
-    out = out.replace("__EVENTS_JSON__", json.dumps(events, ensure_ascii=False))
-    out = out.replace("__PAST_EVENTS_JSON__", json.dumps(past_events, ensure_ascii=False))
-    out = out.replace("__TOTAL__", str(len(events)))
-    out = out.replace("__UPDATED__", datetime.now().strftime("%d %b %Y"))
-    out = out.replace("__SCORE_HIGH__", str(SCORE_TIER_HIGH))
-    out = out.replace("__SCORE_MEDIUM__", str(SCORE_TIER_MEDIUM))
-    out = out.replace("__CITY_OPTIONS__", _options(cities))
-    out = out.replace("__TOPIC_OPTIONS__", _options(topics))
-    out = out.replace("__FORMAT_OPTIONS__", _options(formats))
-    out = out.replace("__ORGANIZER_OPTIONS__", _options(organizers))
-    out = out.replace("__COMPANY_OPTIONS__", _options(companies_sorted))
-    out = out.replace("__ICP_KEYWORDS_JSON__", json.dumps(ICP_KEYWORDS))
-    out = out.replace("__TECH_KEYWORDS_JSON__", json.dumps(TECH_KEYWORDS))
-    out = out.replace("__KEY_COMPANIES_JSON__", json.dumps(KEY_COMPANIES))
-
-    with open(HTML_OUTPUT, "w", encoding="utf-8") as f:
-        f.write(out)
-
-    print(f"✓ Generated {HTML_OUTPUT}")
-
-
-if __name__ == "__main__":
-    build_dashboard()
