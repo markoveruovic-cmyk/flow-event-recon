@@ -1,22 +1,31 @@
 name: Weekly Flow Event Recon
 
+# Kdy se to spouští
 on:
+  # Každé pondělí v 06:00 UTC (= 08:00 v létě / 07:00 v zimě v ČR a DK)
   schedule:
     - cron: '0 6 * * 1'
+  # Spouštět ručně tlačítkem v GitHub UI (záložka Actions → Run workflow)
   workflow_dispatch:
+  # Spustit i při každém pushi do main (užitečné pro ladění)
   push:
     branches: [main]
 
+# Oprávnění, která workflow potřebuje
 permissions:
-  contents: write
-  pages: write
-  id-token: write
+  contents: write    # commitovat aktualizovaný CSV a HTML
+  pages: write       # publikovat na GitHub Pages
+  id-token: write    # auth pro Pages deployment
 
+# Zabrání současnému běhu více instancí
 concurrency:
   group: flow-event-recon
   cancel-in-progress: false
 
 jobs:
+  # ────────────────────────────────────────────────────────────
+  # JOB 1: Stáhnout eventy a commitnout výstupy
+  # ────────────────────────────────────────────────────────────
   scrape:
     runs-on: ubuntu-latest
     steps:
@@ -41,7 +50,7 @@ jobs:
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "Flow Event Recon Bot"
-          git add events.csv index.html
+          git add events.csv index.html past_events.csv seen_urls.txt 2>/dev/null || true
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
@@ -49,6 +58,9 @@ jobs:
             git push
           fi
 
+  # ────────────────────────────────────────────────────────────
+  # JOB 2: Publikovat index.html na GitHub Pages
+  # ────────────────────────────────────────────────────────────
   deploy:
     needs: scrape
     runs-on: ubuntu-latest
@@ -66,6 +78,7 @@ jobs:
           mkdir -p _site
           cp index.html _site/
           cp events.csv _site/
+          cp past_events.csv _site/ 2>/dev/null || true
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
